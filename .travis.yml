@@ -1,0 +1,18 @@
+language: node_js
+node_js:
+    - '12'
+dist: trusty
+services:
+    - mongodb
+    - redis-server
+cache:
+    directories:
+        - node_modules
+        - client/node_modules
+install:
+    - yarn install
+    - yarn build
+script:
+    - nohup yarn start
+    - sleep 3
+    - yarn test
