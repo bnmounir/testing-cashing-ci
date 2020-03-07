@@ -1,4 +1,5 @@
 const CustomPage = require('./helpers/page');
+const mongoose = require('mongoose');
 
 let page;
 beforeEach(async () => {
@@ -26,4 +27,17 @@ test('when signed in shows logout btn', async () => {
     await page.login();
     const text = await page.getContentOf("a[href='/auth/logout']");
     expect(text).toEqual('Logout');
+});
+
+afterAll(async () => {
+    try {
+        // Connection to Mongo killed.
+        await mongoose.disconnect();
+    } catch (error) {
+        console.log(`
+        something went wrong: 
+        ${error}
+      `);
+        throw error;
+    }
 });

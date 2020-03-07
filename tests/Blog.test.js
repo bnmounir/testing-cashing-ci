@@ -1,4 +1,5 @@
 const CustomPage = require('./helpers/page');
+const mongoose = require('mongoose');
 
 let page;
 
@@ -66,4 +67,17 @@ describe('when not logged in, ', () => {
         const res = await page.method('/api/blogs', 'GET');
         expect(res).toEqual({ error: 'You must log in!' });
     });
+});
+
+afterAll(async () => {
+    try {
+        // Connection to Mongo killed.
+        await mongoose.disconnect();
+    } catch (error) {
+        console.log(`
+        something went wrong: 
+        ${error}
+      `);
+        throw error;
+    }
 });
