@@ -7,7 +7,11 @@ import { withRouter } from 'react-router-dom';
 import * as actions from '../../actions';
 
 class BlogFormReview extends Component {
-    state = { file: null };
+    state = { file: null, isLoading: false };
+
+    componentWillUnmount() {
+        this.setState({ isLoading: false });
+    }
 
     renderFields() {
         const { formValues } = this.props;
@@ -43,17 +47,27 @@ class BlogFormReview extends Component {
 
     onSubmit(event) {
         event.preventDefault();
+        this.setState({ isLoading: true });
 
         const { submitBlog, history, formValues } = this.props;
 
         submitBlog(formValues, this.state.file, history);
     }
 
+    showLoading = () => {
+        return (
+            <div className='progress'>
+                <div className='indeterminate'></div>
+            </div>
+        );
+    };
+
     handleFileChange(event) {
         this.setState({ file: event.target.files[0] });
     }
 
     render() {
+        console.log(this.state.isLoading);
         return (
             <form onSubmit={this.onSubmit.bind(this)}>
                 <h5>Please confirm your entries</h5>
@@ -70,7 +84,10 @@ class BlogFormReview extends Component {
 
                 <br />
                 <br />
-                {this.renderButtons()}
+                {!this.state.isLoading && this.renderButtons()}
+                <br />
+                {this.state.isLoading && this.showLoading()}
+                <br />
             </form>
         );
     }

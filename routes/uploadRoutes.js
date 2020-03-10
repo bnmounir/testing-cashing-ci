@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-const uuid = require('uuid/v1');
+const { v4: uuidv4 } = require('uuid');
 const requireLogin = require('../middlewares/requireLogin');
 
 const s3 = new AWS.S3({
@@ -9,9 +9,18 @@ const s3 = new AWS.S3({
 
 module.exports = app => {
     app.get('/api/upload', requireLogin, (req, res) => {
+        if (!req.query.type) {
+            res.status(422).json({
+                error: 'you must provide a image to get a signed url!'
+            });
+        }
         console.log(req.query.type);
-        const fileType = req.query.type.split('/')[1];
-        const key = `${req.user.id}/${uuid()}.${fileType}`;
+        const fileReceived = req.query.type.split('/');
+        const fileType = fileReceived[0];
+        const fileExt = fileReceived[1];
+        if (fileType !== 'image')
+            return res.status(401).json({ error: 'only images are allowed' });
+        const key = `${req.user.id}/${uuidv4()}.${fileExt}`;
         s3.getSignedUrl(
             'putObject',
             {
